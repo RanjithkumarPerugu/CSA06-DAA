@@ -1,0 +1,140 @@
+
+#include <stdio.h>
+
+void swap(int *a, int *b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void insertionSort(int arr[], int n)
+{
+    int i, j, key;
+
+    for(i = 1; i < n; i++)
+    {
+        key = arr[i];
+        j = i - 1;
+
+        while(j >= 0 && arr[j] > key)
+        {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+
+        arr[j + 1] = key;
+    }
+}
+
+int partition(int arr[], int low, int high, int pivot)
+{
+    int i;
+
+    for(i = low; i <= high; i++)
+    {
+        if(arr[i] == pivot)
+        {
+            swap(&arr[i], &arr[high]);
+            break;
+        }
+    }
+
+    int store = low;
+
+    for(i = low; i < high; i++)
+    {
+        if(arr[i] < pivot)
+        {
+            swap(&arr[store], &arr[i]);
+            store++;
+        }
+    }
+
+    swap(&arr[store], &arr[high]);
+
+    return store;
+}
+
+int medianOfMedians(int arr[], int low, int high)
+{
+    int n = high - low + 1;
+
+    if(n <= 5)
+    {
+        insertionSort(arr + low, n);
+        return arr[low + n / 2];
+    }
+
+    int medians[100], count = 0;
+    int i;
+
+    for(i = low; i <= high; i += 5)
+    {
+        int end = i + 4;
+
+        if(end > high)
+            end = high;
+
+        insertionSort(arr + i, end - i + 1);
+
+        medians[count++] = arr[i + (end - i) / 2];
+    }
+
+    return medianOfMedians(medians, 0, count - 1);
+}
+
+int kthSmallest(int arr[], int low, int high, int k)
+{
+    if(low <= high)
+    {
+        int pivot = medianOfMedians(arr, low, high);
+
+        int pos = partition(arr, low, high, pivot);
+
+        if(pos - low == k - 1)
+            return arr[pos];
+
+        if(pos - low > k - 1)
+            return kthSmallest(arr, low, pos - 1, k);
+
+        return kthSmallest(arr, pos + 1, high,
+                           k - (pos - low + 1));
+    }
+
+    return -1;
+}
+
+int main()
+{
+    int arr[100], n, k, i, result;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    if(n <= 0 || n > 100)
+    {
+        printf("Invalid array size\n");
+        return 0;
+    }
+
+    printf("Enter array elements:\n");
+
+    for(i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+
+    printf("Enter K value: ");
+    scanf("%d", &k);
+
+    if(k < 1 || k > n)
+    {
+        printf("Invalid K value\n");
+        return 0;
+    }
+
+    result = kthSmallest(arr, 0, n - 1, k);
+
+    printf("Kth smallest element = %d\n", result);
+
+    return 0;
+}
