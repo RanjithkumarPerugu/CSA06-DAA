@@ -1,0 +1,45 @@
+
+#include <stdio.h>
+
+int binomialCoeff(int n, int k)
+{
+    int C[100][100];
+    int i, j;
+
+    for(i = 0; i <= n; i++)
+    {
+        for(j = 0; j <= k && j <= i; j++)
+        {
+            if(j == 0 || j == i)
+                C[i][j] = 1;
+            else
+                C[i][j] = C[i-1][j-1] + C[i-1][j];
+        }
+    }
+
+    return C[n][k];
+}
+
+int main()
+{
+    int n, k, result;
+
+    printf("Enter value of n: ");
+    scanf("%d", &n);
+
+    printf("Enter value of k: ");
+    scanf("%d", &k);
+
+    if(n < 0 || n >= 100 || k < 0 || k > n)
+    {
+        printf("Invalid input\n");
+        return 0;
+    }
+
+    result = binomialCoeff(n, k);
+
+    printf("Binomial Coefficient C(%d,%d) = %d\n",
+           n, k, result);
+
+    return 0;
+}
