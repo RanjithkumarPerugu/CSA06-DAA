@@ -1,0 +1,67 @@
+
+#include <stdio.h>
+
+int main()
+{
+    int n, target;
+    int a[20], left[1024], right[1024];
+    int lcount = 0, rcount = 0;
+    int i, j, sum, found = 0;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    printf("Enter elements:\n");
+    for(i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+
+    printf("Enter target sum: ");
+    scanf("%d", &target);
+
+    int mid = n / 2;
+
+    // Generate subset sums of first half
+    for(i = 0; i < (1 << mid); i++)
+    {
+        sum = 0;
+        for(j = 0; j < mid; j++)
+        {
+            if(i & (1 << j))
+                sum += a[j];
+        }
+        left[lcount++] = sum;
+    }
+
+    // Generate subset sums of second half
+    for(i = 0; i < (1 << (n - mid)); i++)
+    {
+        sum = 0;
+        for(j = 0; j < n - mid; j++)
+        {
+            if(i & (1 << j))
+                sum += a[mid + j];
+        }
+        right[rcount++] = sum;
+    }
+
+    // Check combinations
+    for(i = 0; i < lcount; i++)
+    {
+        for(j = 0; j < rcount; j++)
+        {
+            if(left[i] + right[j] == target)
+            {
+                printf("Subset found with sum %d\n", target);
+                found = 1;
+                break;
+            }
+        }
+        if(found)
+            break;
+    }
+
+    if(!found)
+        printf("No subset found\n");
+
+    return 0;
+}
